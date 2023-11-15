@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Inicio de sesión exitoso, redirigir a la pantalla principal
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    startActivity(Intent(this, MapasActivity::class.java))
                     finish()
                 } else {
                     // Si el inicio de sesión falla, mostrar un mensaje de error
