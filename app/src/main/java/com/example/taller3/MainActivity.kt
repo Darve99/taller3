@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         } else {
             startActivity(Intent(this, LoginActivity::class.java))
