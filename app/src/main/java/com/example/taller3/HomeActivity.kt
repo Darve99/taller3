@@ -39,12 +39,12 @@ import com.google.firebase.database.*
                  for (data in snapshot.children) {
                      val userId = data.key // Obtener el ID del usuario de la base de datos
                      // Omitir al usuario actual en la lista
-                     if (userId != currentUserID) {
+                     
                          val userName = data.child("nombre").getValue(String::class.java)
                          userName?.let {
                              usersList.add(it)
                          }
-                     }
+
                  }
                  adapter.notifyDataSetChanged()
              }
