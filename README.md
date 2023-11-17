@@ -1,5 +1,5 @@
 # Taller 3
 
-Integrantes:
+Integrantes: Alejandro Roa, Juan Esteban Granada y Alejandro Suarez
 
 Video: 
