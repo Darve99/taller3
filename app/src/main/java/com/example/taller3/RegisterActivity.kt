@@ -175,7 +175,7 @@ class RegisterActivity : AppCompatActivity() {
                         saveUserDataToDatabase(userId, firstName, identificationNumber, latitude, longitude)
                         uploadProfileImageToStorage(userId)
                     }
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    startActivity(Intent(this, MapasActivity::class.java))
                     finish()
                 } else {
                     Toast.makeText(this, "Registro fallido", Toast.LENGTH_SHORT).show()

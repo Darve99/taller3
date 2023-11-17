@@ -6,6 +6,8 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,19 +23,44 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import org.json.JSONObject
 
 class MapasActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapasBinding
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private lateinit var userReference: DatabaseReference
+    private lateinit var userId: String
     var latitud = 0.0
     var longitud = 0.0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
+
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        val currentUser = auth.currentUser
+        userId = currentUser?.uid ?: ""
+        userReference = database.reference.child("users").child(userId)
+
+        getUserStatus()
         binding = ActivityMapasBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -44,6 +71,11 @@ class MapasActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_home, menu)
+        return true
     }
 
     private fun requestPermission() {
@@ -176,4 +208,44 @@ class MapasActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_change_status -> {
+                userReference.child("Estado").addListenerForSingleValueEvent(object :
+                    ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val currentState = snapshot.getValue(String::class.java)
+
+                        val newStatus = if (currentState == "Disponible") "No disponible" else "Disponible"
+
+                        userReference.child("Estado").setValue(newStatus)
+                            .addOnSuccessListener {
+                                Toast.makeText(this@MapasActivity, "Estado cambiado a $newStatus", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this@MapasActivity, "Error al cambiar el estado", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@MapasActivity, "Error al obtener el estado", Toast.LENGTH_SHORT).show()
+                    }
+                })
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    private fun getUserStatus() {
+        userReference.child("Estado").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // No necesitas implementar nada aquí si la lógica se maneja en onOptionsItemSelected
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@MapasActivity, "Error al obtener el estado", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 }
