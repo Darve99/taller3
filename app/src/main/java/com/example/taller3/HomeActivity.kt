@@ -1,5 +1,6 @@
  package com.example.taller3
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -8,49 +9,69 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
  class HomeActivity : AppCompatActivity() {
 
-     private val usersList = mutableListOf<String>()
+     private lateinit var listView: ListView
      private lateinit var databaseReference: DatabaseReference
-     private lateinit var currentUserID: String
+     private lateinit var usersList: MutableList<Pair<String, String>>
 
      override fun onCreate(savedInstanceState: Bundle?) {
          super.onCreate(savedInstanceState)
          setContentView(R.layout.activity_home)
 
-         val lista = findViewById<ListView>(R.id.lista)
-
-         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, usersList)
-         lista.adapter = adapter
-
-         // Referencia a la base de datos de Firebase
+         listView = findViewById(R.id.lista)
+         usersList = mutableListOf()
          databaseReference = FirebaseDatabase.getInstance().reference.child("users")
 
-         // Obtener el ID del usuario actual
-         val currentUser = FirebaseAuth.getInstance().currentUser
-         currentUserID = currentUser?.uid ?: ""
+         val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
+         listView.adapter = adapter
+
+         listView.setOnItemClickListener { _, _, position, _ ->
+             val selectedUser = usersList[position]
+             val userId = selectedUser.first
+
+             databaseReference.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                 override fun onDataChange(snapshot: DataSnapshot) {
+                     val latitude = snapshot.child("latitude").getValue(Double::class.java)
+                     val longitude = snapshot.child("longitude").getValue(Double::class.java)
+
+                     val intent = Intent(this@HomeActivity, MapasActivity::class.java)
+                     intent.putExtra("LATITUDE", latitude)
+                     intent.putExtra("LONGITUDE", longitude)
+                     startActivity(intent)
+                 }
+
+                 override fun onCancelled(error: DatabaseError) {
+                     // Manejar errores al obtener datos
+                 }
+             })
+         }
 
          loadUsers(adapter)
      }
 
      private fun loadUsers(adapter: ArrayAdapter<String>) {
-         val query = databaseReference.orderByChild("Estado").equalTo("Disponible")
-         query.addValueEventListener(object : ValueEventListener {
+         val user = FirebaseAuth.getInstance().currentUser
+         val currentUserId = user?.uid ?: ""
+
+         databaseReference.addValueEventListener(object : ValueEventListener {
              override fun onDataChange(snapshot: DataSnapshot) {
                  usersList.clear()
-                 for (data in snapshot.children) {
-                     val userId = data.key // Obtener el ID del usuario de la base de datos
-                     // Omitir al usuario actual en la lista
-                     if (userId != currentUserID) {
-                         val userName = data.child("firstName").getValue(String::class.java)
-                         userName?.let {
-                             usersList.add(it)
-                         }
+                 adapter.clear()
+
+                 for (userSnapshot in snapshot.children) {
+                     val userId = userSnapshot.key ?: ""
+                     val userName = userSnapshot.child("firstName").getValue(String::class.java) ?: ""
+
+                     if (userId != currentUserId) {
+                         usersList.add(Pair(userId, userName))
+                         adapter.add(userName)
                      }
                  }
+
                  adapter.notifyDataSetChanged()
              }
 
              override fun onCancelled(error: DatabaseError) {
-                 // Manejar errores al obtener datos
+                 // Manejar errores al cargar usuarios
              }
          })
      }
