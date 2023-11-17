@@ -189,7 +189,8 @@ class RegisterActivity : AppCompatActivity() {
             "firstName" to firstName,
             "identificationNumber" to identificationNumber,
             "latitude" to latitude,
-            "longitude" to longitude
+            "longitude" to longitude,
+            "Estado" to "Disponible"
         )
         userReference.setValue(userData)
     }
