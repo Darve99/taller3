@@ -1,6 +1,7 @@
 package com.example.taller3
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -225,6 +226,18 @@ class MapasActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 })
                 true
+            }
+            R.id.verDisponibles -> {
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.action_logout -> {
+                auth.signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+                return true
             }
             else -> super.onOptionsItemSelected(item)
         }
