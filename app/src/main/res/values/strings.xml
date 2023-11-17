@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Taller3</string>
     <string name="title_activity_mapas">MapasActivity</string>
+    <string name="title_activity_mapa_distancia_persona">MapaDistanciaPersonaActivity</string>
 </resources>

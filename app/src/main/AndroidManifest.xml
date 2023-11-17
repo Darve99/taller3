@@ -37,6 +37,10 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
+            android:name=".MapaDistanciaPersonaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_mapa_distancia_persona" />
+        <activity
             android:name=".MapasActivity"
             android:exported="false"
             android:label="@string/title_activity_mapas" />

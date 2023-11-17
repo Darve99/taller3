@@ -152,7 +152,8 @@ class MapasActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
 
-        mMap.uiSettings.isZoomControlsEnabled = true // Habilitar los "gestures" como "pinch to zoom"
+        mMap.uiSettings.isZoomControlsEnabled =
+            true // Habilitar los "gestures" como "pinch to zoom"
         mMap.uiSettings.isZoomGesturesEnabled = true // Habilitar los botones de zoom
     }
 
