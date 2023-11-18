@@ -2,4 +2,4 @@
 
 Integrantes: Alejandro Roa, Juan Esteban Granada y Alejandro Suarez
 
-Video: 
+Video: https://youtu.be/RYZdqRzt4bw
