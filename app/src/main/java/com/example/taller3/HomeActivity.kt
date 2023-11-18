@@ -33,7 +33,7 @@ import com.google.firebase.database.*
                      val latitude = snapshot.child("latitude").getValue(Double::class.java)
                      val longitude = snapshot.child("longitude").getValue(Double::class.java)
 
-                     val intent = Intent(this@HomeActivity, CuatroActivity::class.java)
+                     val intent = Intent(this@HomeActivity, MapaDistanciaPersonaActivity::class.java)
                      intent.putExtra("LATITUDE", latitude)
                      intent.putExtra("LONGITUDE", longitude)
                      startActivity(intent)

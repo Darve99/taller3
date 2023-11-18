@@ -2,9 +2,12 @@ package com.example.taller3
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -15,6 +18,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.taller3.databinding.ActivityMapaDistanciaPersonaBinding
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 
 class MapaDistanciaPersonaActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -30,6 +36,7 @@ class MapaDistanciaPersonaActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapaDistanciaPersonaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -61,10 +68,44 @@ class MapaDistanciaPersonaActivity : AppCompatActivity(), OnMapReadyCallback {
                     mMap.addMarker(MarkerOptions().position(miUbicacion).title("Mi ubicación"))
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(miUbicacion))
 
-                    //
+                    //Recibir el intent de la actividad anterior
+                    val intent = intent
+                    val latitude = intent.getDoubleExtra("LATITUDE", 0.0)
+                    val longitude = intent.getDoubleExtra("LONGITUDE", 0.0)
+                    val ubicacionPersona = LatLng(latitude, longitude)
+                    //añadir marcador de la ubicación de la persona
+                    mMap.addMarker(
+                        MarkerOptions().position(ubicacionPersona).title("Ubicación de la persona")
+                    )
+
+                    val distancia = FloatArray(1)
+                    Location.distanceBetween(
+                        miUbicacion.latitude,
+                        miUbicacion.longitude,
+                        ubicacionPersona.latitude,
+                        ubicacionPersona.longitude,
+                        distancia
+                    )
+
+                    val polylineOptions = PolylineOptions()
+                        .add(miUbicacion, ubicacionPersona)
+                        .width(5f)
+                        .color(Color.RED)
+
+                    val polyline: Polyline = mMap.addPolyline(polylineOptions)
+
+                    //hacer un toast con la distancia
+                    Toast.makeText(
+                        this@MapaDistanciaPersonaActivity,
+                        "La distancia es: " + distancia[0].toString() + " metros",
+                        Toast.LENGTH_LONG
+                    ).show()
 
                 }
             }
         }
+
+        mMap.uiSettings.isZoomControlsEnabled = true // Habilitar los "gestures" como "pinch to zoom"
+        mMap.uiSettings.isZoomGesturesEnabled = true // Habilitar los botones de zoom
     }
 }
