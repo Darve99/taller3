@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = "com.example.taller3"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "com.example.taller3"
         minSdk = 26
@@ -53,7 +52,6 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
